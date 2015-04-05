@@ -19,10 +19,12 @@ var Queue = require('sync-queue')
 var disableWifi = true;
 var accelGThresh = 0.2;
 var fileBatch = 100;
-  // Set precision for accelerometer, 2, 4, 8 (defaults to 2)
+// Set precision for accelerometer, 2, 4, 8 (defaults to 2)
 var accelPrecision = 8;
 // Set read rate in Hertz (times per second) (defaults to 12.5)
 var accelRate = 10;
+// In milliseconds
+var tempReadInterval = 5000;
 
 // Module/tesselate configuration
 var tessalateConfig = {
@@ -63,14 +65,30 @@ function main(tessel, m, filesystem) {
     // No need to get very low data
     if (Math.abs(x) >= accelGThresh && Math.abs(y) >= accelGThresh &&
       Math.abs(z) >= accelGThresh) {
-      addData(x, y, z);
+      addData(x, y, z, '');
     }
   }
 
+  // Get temperature
+  function readTemp() {
+    if (processBatch) {
+      return;
+    }
+
+    m.climate.readTemperature('f', function(error, temp) {
+      if (error) {
+        console.log('Error reading temperature');
+      }
+      else if (temp) {
+        addData('', '', '', temp.toFixed(2));
+      }
+    });
+  }
+
   // Add data to batch
-  function addData(x, y, z) {
-    var t = Date.now();
-    var line = [t, x, y, z, 'null'].join(',') + newLine;
+  function addData(x, y, z, t) {
+    var time = Date.now();
+    var line = [time, x, y, z, t].join(',') + newLine;
 
     // Save in batches.  There is a small window where batches
     // may be full and data comes and the data gets erased
@@ -102,6 +120,8 @@ function main(tessel, m, filesystem) {
 
   // React to accel data
   m.accel.on('data', accelData);
+  // Get temperature every x millisencond
+  setInterval(readTemp, tempReadInterval);
 }
 
 // Connect to modules and any other base setup tasks.
