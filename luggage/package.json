@@ -7,8 +7,9 @@
     "accel-mma84": "^0.2.4",
     "climate-si7020": "^0.1.1",
     "sdcard": "^0.8.7",
-    "tessel": "^0.3.22",
-    "tesselate": "0.0.2"
+    "sync-queue": "0.0.2",
+    "tesselate": "0.0.2",
+    "wifi-cc3000": "0.0.1"
   },
   "devDependencies": {},
   "scripts": {

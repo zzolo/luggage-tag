@@ -4,6 +4,7 @@ var tessel = require('tessel');
 var sdcardlib = require('sdcard');
 
 var sdcard = sdcardlib.use(tessel.port['B']);
+var filePrefix = 'luggage-tag-';
 
 sdcard.on('ready', function() {
   console.log('Connected to SD.');
@@ -20,6 +21,10 @@ sdcard.on('ready', function() {
       else {
         // Read each file
         files.forEach(function(f, fi) {
+          if (f.indexOf(filePrefix) !== 0) {
+            return;
+          }
+
           fs.readFile(f, function(error, data) {
             console.log('Reading: ', f);
             console.log('=================');

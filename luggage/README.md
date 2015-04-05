@@ -30,4 +30,7 @@ The following command line commands are meant to be run from this directory.
 
 ### Utilities
 
-* The following will read all `luggage-tag-XXX` files from the SD card and output to the console: `tessel run reader.js`
+* Output some of all the `luggage-tag-XXX` files from the SD card and output to the console.
+    * `tessel run reader.js`
+* Enable the Wifi since the main script disables it and it is kind of sticky.
+    * `tessel run enable-wifi.js`

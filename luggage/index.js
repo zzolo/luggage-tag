@@ -6,10 +6,23 @@
 // https://tessel.io/docs/climate
 //
 // https://tessel.io/docs/accelerometer
+//
+// Note that this script turns off the wifi (see config)
 
 
 // Dependencies
 var tesselate = require('tesselate');
+var wifi = require('wifi-cc3000');
+var Queue = require('sync-queue')
+
+// High level config that you may want to change
+var disableWifi = true;
+var accelGThresh = 0.2;
+var fileBatch = 100;
+  // Set precision for accelerometer, 2, 4, 8 (defaults to 2)
+var accelPrecision = 8;
+// Set read rate in Hertz (times per second) (defaults to 12.5)
+var accelRate = 10;
 
 // Module/tesselate configuration
 var tessalateConfig = {
@@ -21,15 +34,19 @@ var tessalateConfig = {
   development: true
 };
 
-// A hopefully unique, incremental ID for this run
+// Some globals
 var runID = Math.floor(Date.now() / 1000);
-var accelGThresh = 0.2;
+var newLine = '\r\n';
 var fileStore = 'luggage-tag-' + runID + '.csv';
-var fileColumns = 'time,x,y,z,temp\n';
+var fileColumns = 'time,x,y,z,temp' + newLine;
 
 
 // When all is ready
 function main(tessel, m, filesystem) {
+  var batch = [];
+  var batchNumber = 0;
+  var fsQueue = new Queue();
+  var processBatch = false;
 
   // Getting data from acceleromator
   function accelData(xyz) {
@@ -37,20 +54,49 @@ function main(tessel, m, filesystem) {
     var y = xyz[0].toFixed(2);
     var z = xyz[0].toFixed(2);
 
-    // No need to get simple data
+    // Make sure we are not in the middle of a batch process
+    // step
+    if (processBatch) {
+      return;
+    }
+
+    // No need to get very low data
     if (Math.abs(x) >= accelGThresh && Math.abs(y) >= accelGThresh &&
       Math.abs(z) >= accelGThresh) {
-      saveData(x, y, z);
+      addData(x, y, z);
     }
   }
 
-  // Save data to SD
-  function saveData(x, y, z) {
-    var t = Math.floor(Date.now() / 1000);
-    filesystem.appendFile(fileStore, [t, x, y, z, ''].join(',') + '\n', function(error) {
-      if (error) {
-        console.log('Error writing data to SD: ', fileStore);
-      }
+  // Add data to batch
+  function addData(x, y, z) {
+    var t = Date.now();
+    var line = [t, x, y, z, 'null'].join(',') + newLine;
+
+    // Save in batches.  There is a small window where batches
+    // may be full and data comes and the data gets erased
+    batch.push(line);
+    if (batch.length >= fileBatch) {
+      processBatch = true;
+      saveBatch(batch.join(''));
+      batch = [];
+      processBatch = false;
+    }
+  }
+
+  // Save batch.  Use a queue so that one save happens at one time
+  function saveBatch(data) {
+    batchNumber++;
+    console.log('Saving batch: ', batchNumber);
+
+    fsQueue.place(function() {
+      filesystem.appendFile(fileStore, data, function(error) {
+        if (error) {
+          console.log('Error writing data to SD: ', fileStore);
+        }
+
+        console.log('Saved batch: ', batchNumber);
+        fsQueue.next();
+      });
     });
   }
 
@@ -61,6 +107,16 @@ function main(tessel, m, filesystem) {
 // Connect to modules and any other base setup tasks.
 function setup(tessel, m) {
   console.log('Setup.');
+
+  // Disable wifi
+  if (disableWifi === true) {
+    console.log('Disabling wifi');
+    wifi.disable();
+  }
+
+  // Setup accel module
+  m.accel.setScaleRange(accelPrecision);
+  m.accel.setOutputRate(accelRate);
 
   // Get filesystem
   m.sd.getFilesystems(function(error, fss) {
