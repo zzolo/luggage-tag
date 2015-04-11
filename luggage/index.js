@@ -11,6 +11,7 @@
 
 
 // Dependencies
+var tessel = require('tessel');
 var tesselate = require('tesselate');
 var wifi = require('wifi-cc3000');
 var Queue = require('sync-queue')
@@ -41,6 +42,7 @@ var runID = Math.floor(Date.now() / 1000);
 var newLine = '\r\n';
 var fileStore = 'luggage-tag-' + runID + '.csv';
 var fileColumns = 'time,x,y,z,temp' + newLine;
+var led1 = tessel.led[0].output(0);
 
 
 // When all is ready
@@ -101,18 +103,25 @@ function main(tessel, m, filesystem) {
     }
   }
 
-  // Save batch.  Use a queue so that one save happens at one time
+  // Save batch.  Use a queue so that one save happens at one time.
+  // Turn on LED when saving.
   function saveBatch(data) {
     batchNumber++;
     console.log('Saving batch: ', batchNumber);
 
     fsQueue.place(function() {
+      // Turn on LED
+      led1.toggle();
+
       filesystem.appendFile(fileStore, data, function(error) {
         if (error) {
           console.log('Error writing data to SD: ', fileStore);
         }
 
         console.log('Saved batch: ', batchNumber);
+
+        // Turn off LED
+        led1.toggle();
         fsQueue.next();
       });
     });
