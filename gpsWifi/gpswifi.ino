@@ -10,6 +10,8 @@ std::vector<String> scanned;   // The raw list of SSIDs from this scan (includes
 #include "Adafruit_GPS.h"
 #include <math.h>
 
+#include "sd-card-library/sd-card-library.h"
+
 #define mySerial Serial1
 Adafruit_GPS GPS(&mySerial);
 
@@ -23,21 +25,36 @@ boolean usingInterrupt = false;
 
 #define APP_VERSION 10
 
-
+File myFile;
+const uint8_t chipSelect = A2;
+const uint8_t mosiPin = A5;
+const uint8_t misoPin = A4;
+const uint8_t clockPin = A3;
 
 byte bufferSize = 64;
 byte bufferIndex = 0;
 char buffer[65];
 char c;
 
-
 bool start_scan = true;
+
+String gpsLongG = "0";
+String gpsLatG = "0";
 
 void setup() {
     GPS.begin(9600);
     Serial.begin(9600);
     
     mySerial.begin(9600);
+    
+    //while (!Serial.available());
+    Serial.print("Initializing SD card...");
+    // Initialize HARDWARE SPI with user defined chipSelect
+    if (!SD.begin(chipSelect)) {
+        Serial.println("initialization failed!");
+        return;
+    }
+    Serial.print("SD Card Initialized");
     
     WiFi.on();  
     // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
@@ -96,6 +113,9 @@ void scan() {
             else {
                  if (name != ""){
                     Serial.println(ssid(result) + "," + result.security + "," + result.rssi);
+                    myFile = SD.open("data.txt", FILE_WRITE);
+                    myFile.println(gpsLatG + "," + gpsLongG + "," + ssid(result) + "," + result.security + "," + result.rssi);
+                    myFile.close();
                 }
             }
         }
@@ -167,9 +187,16 @@ void getLocation(){
     //{
       Serial.print("Location: ");
       
-      Serial.print(String(convertDegMinToDecDeg(GPS.latitude, GPS.lat)));
+      String gpsLat = String(convertDegMinToDecDeg(GPS.latitude, GPS.lat));
+      String gpsLong = String(convertDegMinToDecDeg(GPS.longitude,  GPS.lon));
+      
+      Serial.print(gpsLat);
        Serial.print(", "); 
-       Serial.println(String(convertDegMinToDecDeg(GPS.longitude,  GPS.lon)));
+       Serial.println(gpsLong);
+       
+       gpsLatG = gpsLat;
+       gpsLongG = gpsLong;
+      
       
 }
 
