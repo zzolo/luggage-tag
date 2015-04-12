@@ -14,7 +14,9 @@ This project is made with a [Tessel](https://tessel.io/) (1), but could be done 
 1. MicroSD card
     * Most cards come with the FAT filesystem on it, but do make sure this is the case.
 1. Power
-    * (coming soon)
+    * Make sure to read the [Tessel power docs](https://tessel.io/docs/power).  Tessel will handle a maximum input voltage via the USB port of 5 V.  But it will handle a maximum input voltage through the VIN headers of 15 V (and -15V).
+    * I personally used this [8 battery pack](https://www.adafruit.com/products/875).  Need to research how much voltage will last how long.
+    * If using on a plane, note that you are not supposed to check lithium-ion batteries.
 
 ## Software
 
