@@ -6,6 +6,10 @@
   "dependencies": {
     "accel-mma84": "^0.2.4",
     "climate-si7020": "^0.1.1",
+    "commander": "^2.8.1",
+    "jsdom": "^3.1.2",
+    "moment": "^2.10.2",
+    "request": "^2.55.0",
     "sdcard": "^0.8.7",
     "sync-queue": "0.0.2",
     "tesselate": "0.0.2",

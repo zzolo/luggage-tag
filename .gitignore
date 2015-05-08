@@ -1,3 +1,4 @@
+data/*
 
 # General git ignores
 node_modules/
