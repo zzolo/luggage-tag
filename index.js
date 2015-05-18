@@ -9,12 +9,11 @@
 //
 // Note that this script turns off the wifi (see config)
 
-
 // Dependencies
 var tessel = require('tessel');
 var tesselate = require('tesselate');
 var wifi = require('wifi-cc3000');
-var Queue = require('sync-queue')
+var Queue = require('sync-queue');
 
 // High level config that you may want to change
 var disableWifi = true;
@@ -44,7 +43,6 @@ var fileStore = 'luggage-tag-' + runID + '.csv';
 var fileColumns = 'time,x,y,z,temp' + newLine;
 var led1 = tessel.led[0].output(0);
 
-
 // When all is ready
 function main(tessel, m, filesystem) {
   var batch = [];
@@ -55,8 +53,8 @@ function main(tessel, m, filesystem) {
   // Getting data from acceleromator
   function accelData(xyz) {
     var x = xyz[0].toFixed(2);
-    var y = xyz[0].toFixed(2);
-    var z = xyz[0].toFixed(2);
+    var y = xyz[1].toFixed(2);
+    var z = xyz[2].toFixed(2);
 
     // Make sure we are not in the middle of a batch process
     // step
@@ -129,6 +127,7 @@ function main(tessel, m, filesystem) {
 
   // React to accel data
   m.accel.on('data', accelData);
+
   // Get temperature every x millisencond
   setInterval(readTemp, tempReadInterval);
 }
