@@ -1,0 +1,26 @@
+{
+  "name": "luggage-tag",
+  "main": "index.html",
+  "version": "0.0.1",
+  "homepage": "https://github.com/zzolo/luggage-tag",
+  "authors": [
+    "Alan Palazzolo"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.5",
+    "underscore": "~1.8.3",
+    "normalize-css": "~3.0.3",
+    "leaflet": "~0.7.3",
+    "jquery": "~2.1.4",
+    "moment-timezone": "~0.3.1",
+    "rickshaw": "~1.5.1"
+  }
+}

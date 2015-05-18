@@ -70,7 +70,7 @@ csv.forEach(function(c, ci) {
     time = moment.tz((parseInt(cells[0], 10) + offset * 1000), timezone).format();
 
     // Get temp data or accel data
-    if (cells[4]) {
+    if (cells[4] && cells[4].length > 2) {
       finalTemp.push({
         t: time,
         temp: parseFloat(cells[4])

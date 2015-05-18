@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Luggage tag</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
+  <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="bower_components/rickshaw/rickshaw.css">
+  <link rel="stylesheet" href="inspector/css/luggage-tag.css">
+</head>
+<body>
+
+  <div id="luggage-tag">
+    <div id="map" class="section"></div>
+
+    <div id="accel" class="section">
+      <div class="chart-wrapper">
+        <div class="chart"></div>
+        <div class="y-axis"></div>
+      </div>
+    </div>
+
+    <div id="temp" class="section">
+      <div class="chart-wrapper">
+        <div class="chart"></div>
+        <div class="y-axis"></div>
+      </div>
+    </div>
+
+    <div id="alt" class="section">
+      <div class="chart-wrapper">
+        <div class="chart"></div>
+        <div class="y-axis"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="bower_components/moment/moment.js"></script>
+  <script src="bower_components/moment-timezone/moment-timezone.js"></script>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+  <script src="bower_components/d3/d3.js"></script>
+  <script src="bower_components/rickshaw/rickshaw.js"></script>
+  <script src="bower_components/leaflet/dist/leaflet.js"></script>
+
+  <!-- Luggage tag -->
+  <script src="inspector/js/luggage-tag.js"></script>
+</body>
+</html>
